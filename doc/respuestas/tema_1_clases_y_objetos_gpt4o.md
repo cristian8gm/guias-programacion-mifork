@@ -1,0 +1,108 @@
+<!--
+Posible prompt:
+<prompt>
+Tengo un cuestionario con preguntas sobre "Clases y Objetos". Debes tener en cuenta que los conocimientos previos que tengo (y por tanto tus respuestas deben ser adaptadas), son:
+- C/C++ sin orientación a objetos.
+- Temas de Java previos: ninguno.
+
+Cada respuesta debe tener entre 2 - 4 párrafos de longitud (sin contar los trozos de código).
+
+Por favor, escribe en impersonal las respuestas.
+
+</prompt>
+----
+-->
+
+# TEMA 1. Clases y objetos
+
+## 1. ¿Cuáles son las cuatro características básicas de la programación orientada a objetos? Describe brevemente cada una
+
+### Respuesta: La programación orientada a objetos se basa en cuatro pilares fundamentales: **abstracción**, **encapsulación**, **herencia** y **polimorfismo**. La abstracción permite representar elementos del mundo real mediante modelos simplificados y centrados únicamente en los detalles esenciales. Este mecanismo ayuda a gestionar la complejidad de los sistemas al ocultar aquello que no es relevante para el objetivo del programa.
+
+La encapsulación consiste en ocultar el estado interno de un objeto y ofrecer acceso controlado a través de métodos. Esto reduce errores y asegura la coherencia de los datos. La herencia permite crear nuevas clases a partir de otras ya existentes, reutilizando atributos y comportamientos. Por último, el polimorfismo posibilita que diferentes objetos respondan de manera distinta a un mismo método, otorgando flexibilidad y adaptabilidad al diseño del software.
+
+
+## 2. Cita cuatro lenguajes populares que permitan la programación orientada a objetos
+
+### Respuesta: Existen numerosos lenguajes que soportan la programación orientada a objetos. Uno de los más representativos es **Java**, diseñado específicamente con la orientación a objetos como núcleo fundamental. Otro lenguaje muy extendido es **C++**, que combina características estructuradas procedentes del lenguaje C con capacidades completas de orientación a objetos.
+
+También destaca **Python**, un lenguaje multiparadigma donde prácticamente todo se trata como un objeto, lo que facilita aprender progresivamente la filosofía de la POO. Finalmente, **C#** es otro lenguaje ampliamente utilizado en el entorno Microsoft, con una sintaxis y enfoque muy similares a los de Java y con un fuerte soporte para la orientación a objetos.
+
+
+## 3. Los paradigmas anteriores a la POO, ¿Qué es la **programación estructurada**? y, todavía mejor, ¿Qué es la **programación modular**?
+
+### Respuesta: La **programación estructurada** es un paradigma que organiza el código en bloques lógicos mediante estructuras de control bien definidas, como secuencias, condicionales y bucles. Su objetivo principal es promover un flujo de ejecución claro y reducir el uso de instrucciones como `goto`, que generan código difícil de mantener. Este enfoque favorece la claridad y la reducción de errores.
+
+La **programación modular** amplía esta idea dividiendo el programa en partes independientes llamadas módulos. Cada módulo agrupa funciones y datos relacionados, lo que facilita el desarrollo, prueba y mantenimiento del software. Este enfoque fue un paso importante hacia la orientación a objetos, ya que ambos paradigmas buscan dividir el programa en entidades más pequeñas, comprensibles y reutilizables.
+
+## 4. ¿Qué tres elementos definen a un objeto en programación orientada a objetos?
+
+### Respuesta: Un objeto se define por tres elementos fundamentales: **estado**, **comportamiento** e **identidad**. El estado está compuesto por los valores actualizados de sus atributos, que describen cómo se encuentra el objeto en un momento determinado. Estos atributos reflejan la información relevante que el programa necesita gestionar.
+
+El comportamiento de un objeto se expresa a través de sus métodos, que permiten modificar su estado, consultar información o interactuar con otros objetos. Finalmente, la identidad distingue a un objeto de cualquier otro, incluso aunque ambos compartan el mismo estado y el mismo comportamiento. Cada objeto es una entidad única dentro del programa debido a esta identidad propia.
+
+## 5. ¿Qué es una clase? ¿Es lo mismo que un objeto? ¿Qué es una instancia? ¿Todos los lenguajes orientados a objetos manejan el concepto de clase?
+
+### Respuesta: Una **clase** es un modelo o plantilla que define los atributos y métodos que tendrán los objetos creados a partir de ella. Funciona como un molde que describe qué datos y comportamientos compartirán todas las instancias basadas en esa clase. Esto permite crear tipos personalizados que organizan la lógica del programa de manera clara y estructurada.
+
+Un objeto no es lo mismo que una clase. Un objeto es una **instancia** concreta de una clase, creada en memoria y con valores propios en sus atributos. Cada instancia es independiente, aunque todas se basan en la misma definición proporcionada por la clase. No todos los lenguajes orientados a objetos utilizan estrictamente el concepto de clase: lenguajes como Java y C++ sí lo hacen, mientras que otros como JavaScript utilizan un modelo basado en prototipos, donde los objetos se crean a partir de otros objetos sin necesidad de clases formales.
+
+
+## 6. ¿Dónde se almacenan en memoria los objetos? ¿Es igual en todos los lenguajes? ¿Qué es la **recolección de basura**? 
+
+### Respuesta
+
+
+## 7. ¿Qué es un método? ¿Qué es la **sobrecarga de métodos**? 
+
+### Respuesta
+
+
+## 8. Ejemplo mínimo de clase en Java, que se llame Punto, con dos atributos, x e y, con un método que se llame `calculaDistanciaAOrigen`, que calcule la distancia a la posición 0,0. Por sencillez, los atributos deben tener visibilidad por defecto. Crea además un ejemplo de uso con una instancia y uso del método
+
+### Respuesta
+
+
+## 9. ¿Cuál es el punto de entrada en un programa en Java? ¿Qué es `static` y para qué vale? ¿Sólo se emplea para ese método `main`? ¿Para qué se combina con `final`?
+
+### Respuesta
+
+## 10. Intenta ejecutar un poco de Java de forma básica, con los comandos `javac` y `java`. ¿Cómo podemos compilar el programa y ejecutarlo desde linea de comandos? ¿Java es compilado? ¿Qué es la **máquina virtual**? ¿Qué es el *byte-code* y los ficheros `.class`?
+
+### Respuesta
+
+
+## 11. En el código anterior de la clase `Punto` ¿Qué es `new`? ¿Qué es un **constructor**? Pon un ejemplo de constructor en una clase `Empleado` que tenga DNI, nombre y apellidos
+
+### Respuesta
+
+
+## 12. ¿Qué es la referencia `this`? ¿Se llama igual en todos los lenguajes? Pon un ejemplo del uso de `this` en la clase `Punto`
+
+### Respuesta
+
+
+## 13. Añade ahora otro nuevo método que se llame `distanciaA`, que reciba un `Punto` como parámetro y calcule la distancia entre `this` y el punto proporcionado
+
+### Respuesta
+
+
+## 14. El paso del `Punto` como parámetro a un método, es **por copia** o **por referencia**, es decir, si se cambia el valor de algún atributo del punto pasado como parámetro, dichos cambios afectan al objeto fuera del método? ¿Qué ocurre si en vez de un `Punto`, se recibiese un entero (`int`) y dicho entero se modificase dentro de la función? 
+
+### Respuesta
+
+
+## 15. ¿Qué es el método `toString()` en Java? ¿Existe en otros lenguajes? Pon un ejemplo de `toString()` en la clase `Punto` en Java
+
+### Respuesta
+
+
+## 16. Reflexiona: ¿una clase es como un `struct` en C? ¿Qué le falta al `struct` para ser como una clase y las variables de ese tipo ser instancias?
+
+
+### Respuesta
+
+
+## 17. Quitemos un poco de magia a todo esto: ¿Como se podría “emular”, con `struct` en C, la clase `Punto`, con su función para calcular la distancia al origen? ¿Qué ha pasado con `this`?
+
+### Respuesta
