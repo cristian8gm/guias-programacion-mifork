@@ -93,7 +93,8 @@ public class Punto {
     double calculaDistanciaAOrigen() {
         return Math.sqrt(x * x + y * y);
     }
-}```
+}
+```
 
 ---
 
