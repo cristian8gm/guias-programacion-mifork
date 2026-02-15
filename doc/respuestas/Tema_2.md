@@ -62,8 +62,8 @@ En este diseño, la ocultación de información se logra declarando los campos `
 
 En Java, `public` indica que el miembro es accesible desde cualquier clase; `private` restringe el acceso al propio cuerpo de la clase. Esto permite que la implementación interna pueda cambiar (por ejemplo, almacenando coordenadas en otro formato) sin obligar a los clientes a modificar su uso mientras se conserve la interfaz pública.
 
--- Código (versión básica para Q5):
-public class Punto {
+Código:
+```public class Punto {
     // Representación oculta (ocultación de información)
     private double x;
     private double y;
@@ -81,33 +81,66 @@ public class Punto {
         return Math.hypot(x, y); // equivalente a sqrt(x^2 + y^2) con buena estabilidad numérica
     }
 }
+```
 
 ---
 
 ## 6. En Java, ¿A quiénes se pueden aplicar los modificadores `public` o `private`?
 
-### Respuesta
+### Respuesta:
 
+En Java, `public` y `private` pueden aplicarse a miembros de clase (atributos, métodos, constructores) y, con matices, a tipos. A nivel de tipos superiores (top-level), las clases, interfaces y enums pueden ser `public` o con visibilidad por defecto (package-private). No es posible declarar una clase top-level como `private`.
+
+Dentro de una clase (tipos anidados), se permite `public`, `private`, `protected` y por defecto (package-private) para clases, interfaces, enums y clases anidadas estáticas o internas. En cuanto a miembros, los campos, métodos y constructores admiten `public`, `private`, `protected` o visibilidad por defecto.
+
+---
 
 ## 7. En POO, la visibilidad puede ser pública o privada, pero ¿existen más tipos de visibilidad? ¿Qué ocurre en Java? ¿Y en otros lenguajes?
 
-### Respuesta
+### Respuesta:
 
+Además de `public` y `private`, muchos lenguajes incorporan visibilidades intermedias para equilibrar encapsulación y reutilización. En Java existen `protected` (accesible en la clase, subclases y el mismo paquete) y la visibilidad por defecto, conocida como package-private (accesible solo dentro del mismo paquete).
+
+Otros lenguajes ofrecen conjuntos distintos: C++ tiene `public`, `protected` y `private` sin noción de paquete; C# añade `internal`, `protected internal` y `private protected` para granularidad de ensamblado; Kotlin incorpora `internal` para el módulo. Python se basa en convenciones y *name mangling* (doble guion bajo) en lugar de visibilidades estrictas del compilador.
+
+---
 
 ## 8. Responde: Los miembros de instancia privados de un objeto están ocultos para (a) otras clases o (b) otras instancias, aunque sean de la misma clase. Pon un ejemplo añadiendo un método `calcularDistanciaAPunto(Punto otro)` y explica la respuesta.
 
-### Respuesta
+### Respuesta:
 
+Los miembros privados están ocultos para **otras clases**, pero **no** para **otras instancias de la misma clase** cuando se accede desde el propio código de la clase. Es decir, dentro de un método de `Punto`, se puede leer el `x` y `y` de *otro* `Punto` aunque sean `private`, porque el acceso ocurre dentro del contexto de la clase `Punto`.
+
+Este detalle es clave para operaciones como comparaciones, copias o cálculos entre instancias homogéneas. Permite mantener la representación verdaderamente privada frente a terceros, sin obstaculizar la cooperación entre objetos del mismo tipo a nivel de implementación.
+
+Código:
+```public double calcularDistanciaAPunto(Punto otro) {
+    // Acceso legal a campos privados de "otro" porque estamos dentro de la clase Punto
+    return Math.hypot(this.x - otro.x, this.y - otro.y);
+}
+```
+
+---
 
 ## 9. ¿Qué son los métodos "getter" y "setter" en los lenguajes orientados a objetos?
 
-### Respuesta
+### Respuesta:
 
+Los *getters* (accesores) son métodos de lectura que exponen de forma controlada el valor de un atributo. Los *setters* (mutadores) son métodos de escritura que permiten modificar un atributo, normalmente aplicando validaciones, normalizaciones o disparando efectos colaterales controlados.
+
+Su uso debe ser intencional: exponer un getter o setter no es automático ni obligatorio. Abrir la escritura indiscriminada con setters puede poner en riesgo invariantes y aumentar el acoplamiento. Por ello, con frecuencia se prefieren métodos de dominio que expresen operaciones significativas antes que setters genéricos.
+
+---
 
 ## 10. Cuando nos referimos a que la ocultación de información mejora la "seguridad" del programa, ¿nos referimos a que no pueda ser "hackeado"?
 
-### Respuesta
+### Respuesta:
 
+En este contexto, “seguridad” se refiere principalmente a la **integridad** y **robustez** internas del diseño: evitar estados inválidos, reducir efectos colaterales, impedir usos indebidos de la representación y acotar el acoplamiento. La encapsulación dificulta alteraciones accidentales o no controladas del estado.
+
+No debe confundirse con la seguridad en el sentido de ciberseguridad (resistencia a ataques externos). Aunque reducir la superficie pública puede aportar beneficios indirectos (menos vectores de interacción), la protección contra ataques requiere medidas adicionales: validación de entradas, control de acceso, criptografía, políticas de despliegue, etc.
+
+---
 
 ## 11. ¿Qué diferencia hay entre **miembro de instancia** y **miembro de clase**? ¿Los miembros de clase también se pueden ocultar?
 
