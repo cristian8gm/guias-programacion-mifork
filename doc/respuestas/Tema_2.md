@@ -63,7 +63,8 @@ En este diseño, la ocultación de información se logra declarando los campos `
 En Java, `public` indica que el miembro es accesible desde cualquier clase; `private` restringe el acceso al propio cuerpo de la clase. Esto permite que la implementación interna pueda cambiar (por ejemplo, almacenando coordenadas en otro formato) sin obligar a los clientes a modificar su uso mientras se conserve la interfaz pública.
 
 Código:
-```public class Punto {
+```
+public class Punto {
     // Representación oculta (ocultación de información)
     private double x;
     private double y;
@@ -114,7 +115,8 @@ Los miembros privados están ocultos para **otras clases**, pero **no** para **o
 Este detalle es clave para operaciones como comparaciones, copias o cálculos entre instancias homogéneas. Permite mantener la representación verdaderamente privada frente a terceros, sin obstaculizar la cooperación entre objetos del mismo tipo a nivel de implementación.
 
 Código:
-```public double calcularDistanciaAPunto(Punto otro) {
+```
+public double calcularDistanciaAPunto(Punto otro) {
     // Acceso legal a campos privados de "otro" porque estamos dentro de la clase Punto
     return Math.hypot(this.x - otro.x, this.y - otro.y);
 }
