@@ -63,7 +63,7 @@ En este diseño, la ocultación de información se logra declarando los campos `
 En Java, `public` indica que el miembro es accesible desde cualquier clase; `private` restringe el acceso al propio cuerpo de la clase. Esto permite que la implementación interna pueda cambiar (por ejemplo, almacenando coordenadas en otro formato) sin obligar a los clientes a modificar su uso mientras se conserve la interfaz pública.
 
 Código:
-```
+```java
 public class Punto {
     // Representación oculta (ocultación de información)
     private double x;
@@ -115,7 +115,7 @@ Los miembros privados están ocultos para **otras clases**, pero **no** para **o
 Este detalle es clave para operaciones como comparaciones, copias o cálculos entre instancias homogéneas. Permite mantener la representación verdaderamente privada frente a terceros, sin obstaculizar la cooperación entre objetos del mismo tipo a nivel de implementación.
 
 Código:
-```
+```java
 public double calcularDistanciaAPunto(Punto otro) {
     // Acceso legal a campos privados de "otro" porque estamos dentro de la clase Punto
     return Math.hypot(this.x - otro.x, this.y - otro.y);
@@ -146,28 +146,121 @@ No debe confundirse con la seguridad en el sentido de ciberseguridad (resistenci
 
 ## 11. ¿Qué diferencia hay entre **miembro de instancia** y **miembro de clase**? ¿Los miembros de clase también se pueden ocultar?
 
-### Respuesta
+### Respuesta:
+Un miembro de instancia pertenece a cada objeto concreto (cada instancia mantiene su propia copia o estado), mientras que un miembro de clase (en Java, marcado con `static`) pertenece a la clase en sí, compartiéndose entre todas las instancias. Por ejemplo, un contador total de objetos suele ser estático, mientras que las coordenadas de un `Punto` son de instancia.
 
+Los miembros de clase también pueden y deben encapsularse: pueden ser `private static` y exponerse mediante métodos públicos controlados (también estáticos, si procede). El hecho de ser compartidos no elimina la necesidad de ocultación de información ni las validaciones correspondientes.
+
+---
 
 ## 12. Brevemente: ¿Tiene sentido que los constructores sean privados?
 
-### Respuesta
+### Respuesta:
 
+Sí, tiene sentido cuando se desea **controlar** por completo cómo se crean las instancias. Un constructor `private` impide la instanciación directa desde fuera de la clase, forzando a utilizar métodos factoría estáticos (p. ej., `of(...)`, `from(...)`), *builders* o patrones como *singleton*.
+
+Este enfoque permite validar, aplicar cachés o *pools*, normalizar parámetros, devolver subtipos o instancias compartidas, e incluso impedir la creación de objetos si no se cumplen ciertas precondiciones. También es útil en clases de utilidades que no deben instanciarse nunca.
+
+---
 
 ## 13. ¿Cómo se indican los **miembros de clase** en Java? Pon un ejemplo, en la clase `Punto` definida anteriormente, para que incluya miembros de clase que permitan saber cuáles son los valores `x` e `y` máximos que se han establecido en todos los puntos que se hayan creado hasta el momento.
 
-### Respuesta
+### Respuesta:
 
+En Java, los miembros de clase se indican con la palabra clave `static`. Pueden declararse `private` para ocultarlos y exponer solo lecturas mediante getters estáticos `public` si se desea consultar su valor externo. Se recomienda inicializarlos con valores neutros y actualizarlos en los puntos de creación o modificación pertinentes.
+
+A continuación, se muestra una versión de `Punto` que mantiene los máximos globales de `x` e `y` observados en todas las instancias. Se encapsulan los campos estáticos y se actualizan en el constructor. La interfaz pública expone métodos de lectura estáticos para consultar estos máximos.
+
+ Código:
+```java
+public class Punto {
+    private double x;
+    private double y;
+
+    // Miembros de clase (estáticos) ocultos
+    private static double maxX = Double.NEGATIVE_INFINITY;
+    private static double maxY = Double.NEGATIVE_INFINITY;
+
+    public Punto(double x, double y) {
+        this.x = x;
+        this.y = y;
+        // Actualización controlada de los máximos globales
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
+    }
+
+    public double getX() { return x; }
+    public double getY() { return y; }
+
+    public double calcularDistanciaAOrigen() {
+        return Math.hypot(x, y);
+    }
+
+    public double calcularDistanciaAPunto(Punto otro) {
+        return Math.hypot(this.x - otro.x, this.y - otro.y);
+    }
+
+    // Interfaz pública estática para consultar máximos
+    public static double getMaxXGlobal() { return maxX; }
+    public static double getMaxYGlobal() { return maxY; }
+}
+```
+
+---
 
 ## 14. Como sería un método factoría dentro de la clase `Punto` para construir un `Punto` a partir de dos coordenadas, pero que las redondee al entero más cercano. Escribe sólo el código del método, no toda la clase ¿Has usado `static`? 
 
-### Respuesta
+### Respuesta:
 
+El método factoría se declara `static` para asociarlo a la clase y no a una instancia concreta. De este modo, se puede crear un `Punto` sin requerir un objeto previo y se puede centralizar la lógica de normalización o validación. Para redondear al entero más cercano, puede emplearse `Math.rint` (que devuelve `double`) o `Math.round` (que devuelve `long`), convirtiendo a `double` si se desea mantener el tipo.
+
+Se utiliza `static` porque define una operación de construcción propia de la clase como tipo, no de una instancia ya creada. Esto ayuda a mejorar la legibilidad (`Punto.redondeado(...)`) y a evitar constructores con banderas ambiguas.
+
+Solo el método (para incluir dentro de Punto):
+```java
+public static Punto crearRedondeado(double x, double y) {
+    double rx = Math.rint(x); // redondeo al entero más cercano como double (ties-to-even)
+    double ry = Math.rint(y);
+    return new Punto(rx, ry);
+}```
+
+---
 
 ## 15. Cambia la implementación de `Punto`. En vez de dos `double`, emplea un array interno de dos posiciones, intentando no modificar la interfaz pública de la clase.
 
-### Respuesta
+### Respuesta:
 
+Para mantener la interfaz pública, se conservan los mismos nombres y firmas de métodos (constructor, getters, etc.), pero la representación privada pasa a ser un arreglo `double[2]`. Este cambio de implementación no debería afectar a los clientes mientras se respete el contrato expuesto.
+
+Esto ilustra el beneficio de la ocultación de información: la representación interna puede variar libremente. Incluso se pueden agregar validaciones y normalizaciones internas adicionales sin alterar el código cliente que usa la clase `Punto`.
+
+Código:
+```java
+public class Punto {
+    // Representación interna cambiada: 0 -> x, 1 -> y
+    private final double[] coord = new double[2];
+
+    public Punto(double x, double y) {
+        coord[0] = x;
+        coord[1] = y;
+    }
+
+    public double getX() { return coord[0]; }
+    public double getY() { return coord[1]; }
+
+    public double calcularDistanciaAOrigen() {
+        return Math.hypot(coord[0], coord[1]);
+    }
+
+    public double calcularDistanciaAPunto(Punto otro) {
+        // Acceso a representación privada de "otro" permitido dentro de la clase
+        return Math.hypot(this.coord[0] - otro.coord[0],
+                          this.coord[1] - otro.coord[1]);
+    }
+}
+```
+
+---
 
 ## 16. Si un atributo va a tener un método "getter" y "setter" públicos, ¿no es mejor declararlo público? ¿Cuál es la convención más habitual sobre los atributos, que sean públicos o privados? ¿Tiene esto algo que ver con las "invariantes de clase"?
 
