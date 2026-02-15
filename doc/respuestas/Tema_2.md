@@ -222,7 +222,8 @@ public static Punto crearRedondeado(double x, double y) {
     double rx = Math.rint(x); // redondeo al entero más cercano como double (ties-to-even)
     double ry = Math.rint(y);
     return new Punto(rx, ry);
-}```
+}
+```
 
 ---
 
