@@ -340,7 +340,7 @@ Se define un `enum` con doce constantes y se asocian, mediante un constructor pr
 
 Con esta estructura, se encapsula la información de cada mes y se facilita su consulta mediante métodos públicos. La representación interna (por ejemplo, el cálculo de días) queda oculta, permitiendo futuras extensiones sin romper el contrato.
 
--- Código (enum Mes para Q23):
+Código (enum Mes para Q23):
 ```Java
 public enum Mes {
     ENERO      (1, 31),
@@ -391,7 +391,7 @@ Se definen métodos que, dado un hemisferio, determinen si el mes interseca con 
 
 Las implementaciones pueden expresarse en términos de ordinales o mediante conjuntos de meses por estación. A continuación, se incorporan a `Mes` métodos booleanos que aplican estas reglas de forma clara y encapsulada.
 
--- Código (métodos añadidos a enum Mes):ç
+Código (métodos añadidos a enum Mes):
 ```Java
 public boolean esDePrimavera(boolean esHemisferioNorte) {
     if (esHemisferioNorte) {

@@ -16,28 +16,92 @@ Por favor, escribe en impersonal las respuestas.
 
 ## 1. Empecemos un tema sobre control de errores en lenguajes de programación, con algo básico. En C, donde no existen las excepciones, pongamos un ejemplo de una raíz que toma número flotante positivo. Queremos controlar el error si la función recibe un número negativo. El usuario debe ser informado pero desde fuera de la función `raiz` ¿Cómo indicamos ese error?. Enumera dos opciones diferentes de diseñar, poniendo un ejemplo de código de cada una.
 
-### Respuesta
+### Respuesta:
 
+En C, al no existir un mecanismo de excepciones, el control de errores suele llevarse a cabo mediante códigos devueltos o valores especiales. Una opción común consiste en devolver un valor indicador que denote error, como `-1.0`, y permitir que el llamador verifique si dicho valor significa que se ha producido un problema. Esta estrategia es sencilla pero puede causar ambigüedad si el valor usado para indicar error pudiera ser también un resultado legítimo.
+
+Otra alternativa consiste en utilizar parámetros por referencia para devolver el resultado y un valor entero que indique el estado (éxito o fallo). Con este enfoque, la función puede devolver un código de error específico, mientras el resultado se almacena solo si es válido. Esta opción permite separar claramente la señalización del error del valor calculado, facilitando un control más preciso desde fuera de la función.
+
+Código (opción 1: valor especial):
+```c
+double raiz(double x) {
+    if (x < 0.0) {
+        return -1.0; // error
+    }
+    return sqrt(x);
+}
+```
+Código (opción 2: código de estado por referencia):
+```c
+int raiz(double x, double *resultado) {
+    if (x < 0.0) return -1;  // error
+    *resultado = sqrt(x);
+    return 0;
+}
+```
+
+---
 
 ## 2. Brevemente ¿Qué es una **"excepción"**? ¿Con qué objetivo las usa un programador cuando implementa funciones o cuando las llama?
 
-### Respuesta
+### Respuesta:
 
+Una excepción es un mecanismo que permite señalar y gestionar errores o situaciones anómalas durante la ejecución de un programa. En lugar de regresar a la función llamadora con códigos de error, la ejecución normal se interrumpe y se transfiere el control a un manejador de excepciones adecuado. Este mecanismo permite separar la lógica normal del código de tratamiento de errores.
+
+Los programadores utilizan excepciones para notificar automáticamente fallos que no pueden resolverse en el punto donde se detectan. Para quien llama, este mecanismo ofrece una forma clara de reaccionar ante errores sin mezclar comprobaciones constantes dentro del flujo normal. Además, la propagación automática simplifica el manejo de situaciones inesperadas y evita que los errores queden silenciados.
+
+---
 
 ## 3. Reescribe el mismo ejemplo de raiz, pero en Java, metiendo ese método en una clase `Calculadora` y llama a dicho método desde el método `main`, mostrando cómo se puede controlar desde fuera.
 
-### Respuesta
+### Respuesta:
 
+En Java se puede representar el error lanzando una excepción cuando el número es negativo. Dentro de la clase `Calculadora`, el método `raiz` verificará el argumento y, si no es válido, lanzará una `IllegalArgumentException`. De este modo, la responsabilidad de manejar el error recaerá en el código llamador, que podrá capturarla mediante un bloque `try-catch`.
+
+En el método `main`, se llamará al método `raiz` desde un bloque `try`, y si la entrada es incorrecta, se capturará la excepción mostrando un mensaje informativo. Esto separa claramente las responsabilidades: la función valida y notifica; el llamador decide qué hacer ante la situación anómala.
+
+Código:
+```Java
+class Calculadora {
+    public static double raiz(double x) {
+        if (x < 0) {
+            throw new IllegalArgumentException("Número negativo.");
+        }
+        return Math.sqrt(x);
+    }
+
+    public static void main(String[] args) {
+        try {
+            double r = raiz(-5);
+            System.out.println("Resultado: " + r);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error desde fuera: " + e.getMessage());
+        }
+    }
+}
+```
+
+---
 
 ## 4. ¿Qué es **"lanzar"** una excepción? ¿Qué es **"controlar"** o **"capturar"** una excepción? ¿Qué es que se **"propague"** una excepción? ¿Qué le va ocurriendo a las funciones en la pila de llamadas por donde se va propagando la excepción? ¿Las funciones que no la controlan se reanudan después de alguna forma? Explica con el mismo ejemplo anterior en Java de la raíz cuadrada.
 
-### Respuesta
+### Respuesta:
 
+Lanzar una excepción significa interrumpir el flujo normal de ejecución y crear un objeto que describe la situación de error. En Java se hace con la palabra clave `throw`. Una vez lanzada, la excepción sube por la pila en busca de un bloque `catch` que coincida con su tipo. Controlar o capturar una excepción significa manejarla en dicho bloque mediante código capaz de responder al problema.
+
+La propagación implica que, si una función no captura la excepción, esta continúa ascendiendo hacia la función que la llamó. Cada marco de la pila se descarta, liberando el contexto y sin reanudar ejecución tras el punto donde ocurrió el error. Por esa razón, en el ejemplo de `raiz`, si `main` captura la excepción y `raiz` no, `raiz` no se reanuda tras lanzar la excepción; simplemente deja de ejecutarse al abandonar su marco.
+
+---
 
 ## 5. ¿Qué ventajas tiene frente a C, la **"propagación natural"** de las excepciones a través de la pila (*stack*) de llamadas?
 
-### Respuesta
+### Respuesta:
 
+La propagación natural evita que cada función tenga que realizar comprobaciones explícitas de retorno como ocurre en C. Esto reduce considerablemente el código repetitivo y las estructuras condicionales, mejorando la claridad del programa y separando responsabilidades. Además, permite que la gestión del error se realice en el nivel adecuado, sin ensuciar las funciones intermedias.
+
+Otra ventaja significativa es la seguridad de que los errores no se silencian accidentalmente. En C, si un programador olvida comprobar un código de retorno, el fallo puede pasar inadvertido y causar efectos no deseados. En Java, si nadie captura la excepción, el programa finaliza mostrando un mensaje detallado, lo que facilita la localización del problema.
+
+---
 
 ## 6. En orientación a objetos, ¿las excepciones suelen ser objetos? ¿Qué ventajas tiene esto en términos de encapsulación? ¿Podemos entonces crear excepciones personalizadas?
 
