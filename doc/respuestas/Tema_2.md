@@ -265,44 +265,163 @@ public class Punto {
 
 ## 16. Si un atributo va a tener un método "getter" y "setter" públicos, ¿no es mejor declararlo público? ¿Cuál es la convención más habitual sobre los atributos, que sean públicos o privados? ¿Tiene esto algo que ver con las "invariantes de clase"?
 
-### Respuesta
+### Respuesta:
 
+Declarar el atributo público expone la representación y elimina la posibilidad de validar o controlar el acceso sin romper compatibilidad en el futuro. Aunque se disponga de getters y setters, mantener el campo `private` conserva la capacidad de añadir comprobaciones, *lazy loading*, notificaciones o incluso cambiar la estructura interna sin afectar al exterior.
 
-## 17. ¿Qué significa que una clase sea **inmutable**? ¿qué es un método modificador? ¿Un método modificador es siempre un "setter"? ¿Tiene ventajas que una clase sea inmutable?
+La convención más extendida es declarar los atributos como `private` y proporcionar solo los accesores necesarios, idealmente de forma mínima. Esto está íntimamente ligado con las invariantes de clase, puesto que se desea que cualquier modificación del estado pase por puntos controlados donde se puedan hacer cumplir las restricciones.
 
-### Respuesta
+---
 
+## 17. ¿Qué significa que una clase sea **inmutable**? ¿Qué es un método modificador? ¿Un método modificador es siempre un "setter"? ¿Tiene ventajas que una clase sea inmutable?
+
+### Respuesta:
+
+Una clase inmutable es aquella cuyo estado no puede cambiar una vez construida; todas sus “modificaciones” devuelven nuevas instancias con el cambio aplicado. Para lograrlo, se suelen usar campos `final` y no se exponen setters ni referencias mutables escapadas. `String` en Java es un ejemplo canónico.
+
+Un método modificador es cualquier método que cambia el estado observable del objeto. No tiene por qué llamarse “setter”; también lo son métodos como `mover(dx, dy)` si alteran coordenadas. La inmutabilidad ofrece ventajas de simplicidad, seguridad frente a efectos colaterales, facilidad de razonar y seguridad en concurrencia al no requerir sincronización para lectura.
+
+---
 
 ## 18. ¿Es recomendable incluir métodos "setter" siempre y como convención?
 
-### Respuesta
+### Respuesta:
 
+No es recomendable incluir setters de forma automática. Debe exponerse únicamente aquello que el modelo de dominio necesite realmente. Si el estado no debe variar, no se debe proporcionar setters. Si debe variar, conviene preferir operaciones con semántica de dominio (p. ej., `moverA(x, y)`, `redimensionar(radio)`) que puedan validar y preservar invariantes.
+
+Reducir el número de setters disminuye el acoplamiento y la posibilidad de estados intermedios inválidos. También orienta la interfaz a la intención y no a la estructura, lo que facilita mantener y evolucionar el código sin romper contratos.
+
+---
 
 ## 19. ¿La clase `String` en Java es mutable o inmutable? ¿Qué ocurre al concatenar dos cadenas? ¿Qué debemos hacer si vamos a hacer una operación que implique concatenar muchas veces para construir paso a paso una cadena muy larga?
 
-### Respuesta
+### Respuesta:
 
+`String` es inmutable en Java. Cada operación que aparenta “modificar” una cadena realmente crea un nuevo objeto con el resultado, manteniendo intactos los operandos originales. Esto facilita el razonamiento y la seguridad del tipo, pero puede tener coste cuando se encadenan muchas concatenaciones.
+
+Al concatenar reiteradamente dentro de bucles, se recomienda emplear `StringBuilder` (o `StringBuffer` si se necesita sincronización) para construir eficientemente la cadena. Una vez completada la construcción, se llama a `toString()` para obtener el resultado final inmutable.
+
+---
 
 ## 20. En POO ¿Cómo se comparan objetos de una misma clase? ¿Por su contenido o por su identidad? ¿Qué es el método equals en Java? ¿Qué hace por defecto? ¿Cómo se deben comparar dos cadenas en Java? 
 
-### Respuesta
+### Respuesta:
 
+La comparación puede ser por identidad (si son el mismo objeto en memoria) o por equivalencia de contenido (si “representan lo mismo”). En Java, la identidad se comprueba con `==`, mientras que la equivalencia de contenido suele implementarse sobrescribiendo `equals`.
+
+El método `equals` está definido en `Object` y, por defecto, compara por identidad (`this == obj`). Las clases que requieran comparación lógica por contenido deben sobrescribir `equals` (y, coherentemente, `hashCode`). Las cadenas en Java deben compararse con `equals` (o `equalsIgnoreCase` si corresponde), **no** con `==`, que solo compara referencias.
+
+---
 
 ## 21. ¿Qué son las clases "wrapper" en un lenguaje de programación orientado a objetos? ¿Cómo se hace? ¿Es un proceso automático? ¿Qué ventajas tienen? ¿Todos los lenguajes orientados a objetos tienen tipos primitivos y necesitan wrappers? 
 
-### Respuesta
+### Respuesta:
 
+En Java, las *wrapper classes* envuelven tipos primitivos para tratarlos como objetos: `Integer` para `int`, `Double` para `double`, etc. Desde Java 5, el compilador realiza *autoboxing* y *unboxing*, convirtiendo automáticamente entre primitivos y sus envoltorios cuando el contexto lo requiere (por ejemplo, al usar genéricos y colecciones).
+
+Sus ventajas incluyen poder usar valores numéricos en colecciones genéricas (que requieren objetos), representar ausencia con `null`, y acceder a utilidades asociadas (métodos estáticos, constantes). No todos los lenguajes distinguen entre primitivos y objetos; en algunos, “todo es objeto” y no se necesitan *wrappers* explícitos para colecciones.
+
+---
 
 ## 22. ¿En POO qué es un **tipo de dato enumerado**? ¿En Java, un tipo de dato enumerado es una clase? ¿Qué ventajas tienen en términos de encapsulación los enumerados en Java?
 
-### Respuesta
+### Respuesta:
 
+Un tipo enumerado define un conjunto finito de valores con nombre, representando estados o categorías bien delimitadas (por ejemplo, días de la semana). Garantiza seguridad de tipos frente a usar enteros o cadenas “mágicas” y facilita el control de flujo y la expresividad del código.
+
+En Java, un `enum` es una forma especial de clase que puede tener campos, métodos y constructores privados. Sus instancias válidas quedan acotadas a las definidas en la declaración, lo que aporta encapsulación y control total sobre el dominio de valores, además de permitir adjuntar comportamiento y datos por cada constante.
+
+---
 
 ## 23. Crea un tipo enumerado en Java que se llame `Mes`, con doce posibles instancias y que además proporcione métodos para obtener cuántos días tiene ese mes, el ordinal de ese mes en el año (1-12), empleando atributos privados y constructores del tipo enumerado.
 
-### Respuesta
+### Respuesta:
+Se define un `enum` con doce constantes y se asocian, mediante un constructor privado, el ordinal (1–12) y los días estándar en año no bisiesto. Para contemplar años bisiestos, puede añadirse un método que reciba un booleano `esBisiesto` y ajuste febrero a 29 días.
 
+Con esta estructura, se encapsula la información de cada mes y se facilita su consulta mediante métodos públicos. La representación interna (por ejemplo, el cálculo de días) queda oculta, permitiendo futuras extensiones sin romper el contrato.
+
+-- Código (enum Mes para Q23):
+```Java
+public enum Mes {
+    ENERO      (1, 31),
+    FEBRERO    (2, 28),
+    MARZO      (3, 31),
+    ABRIL      (4, 30),
+    MAYO       (5, 31),
+    JUNIO      (6, 30),
+    JULIO      (7, 31),
+    AGOSTO     (8, 31),
+    SEPTIEMBRE (9, 30),
+    OCTUBRE    (10, 31),
+    NOVIEMBRE  (11, 30),
+    DICIEMBRE  (12, 31);
+    
+    private final int ordinalMes;  // 1..12
+    private final int diasNoBisiesto;
+
+    private Mes(int ordinalMes, int diasNoBisiesto) {
+        this.ordinalMes = ordinalMes;
+        this.diasNoBisiesto = diasNoBisiesto;
+    }
+
+    public int getOrdinal() {
+        return ordinalMes;
+    }
+
+    public int getDiasNoBisiesto() {
+        return diasNoBisiesto;
+    }
+
+    // Variante que contempla bisiestos
+    public int getDias(boolean esBisiesto) {
+        if (this == FEBRERO) {
+            return esBisiesto ? 29 : 28;
+        }
+        return diasNoBisiesto;
+    }
+```
+
+---
 
 ## 24. Añade a la clase `Mes` del ejercicio anterior cuatro métodos para devolver si ese mes tiene algunos días de invierno, primavera, verano u otoño, indicando con un booleano el hemisferio (norte o sur, parámetro `enHemisferioNorte`). Es decir: `esDePrimavera(boolean esHemisferioNorte)`, `esDeVerano(boolean esHemisferioNorte)`, `esDeOtoño(boolean esHemisferioNorte)`, `esDeInvierno(boolean esHemisferioNorte)`
 
-### Respuesta
+### Respuesta:
+
+Se definen métodos que, dado un hemisferio, determinen si el mes interseca con la estación correspondiente. En el hemisferio norte, típicamente: primavera (marzo–mayo), verano (junio–agosto), otoño (septiembre–noviembre) e invierno (diciembre–febrero). En el hemisferio sur, las estaciones se invierten: primavera (septiembre–noviembre), verano (diciembre–febrero), otoño (marzo–mayo) e invierno (junio–agosto).
+
+Las implementaciones pueden expresarse en términos de ordinales o mediante conjuntos de meses por estación. A continuación, se incorporan a `Mes` métodos booleanos que aplican estas reglas de forma clara y encapsulada.
+
+-- Código (métodos añadidos a enum Mes):ç
+```Java
+public boolean esDePrimavera(boolean esHemisferioNorte) {
+    if (esHemisferioNorte) {
+        return this == MARZO || this == ABRIL || this == MAYO;
+    } else {
+        return this == SEPTIEMBRE || this == OCTUBRE || this == NOVIEMBRE;
+    }
+}
+
+public boolean esDeVerano(boolean esHemisferioNorte) {
+    if (esHemisferioNorte) {
+        return this == JUNIO || this == JULIO || this == AGOSTO;
+    } else {
+        return this == DICIEMBRE || this == ENERO || this == FEBRERO;
+    }
+}
+
+public boolean esDeOtoño(boolean esHemisferioNorte) {
+    if (esHemisferioNorte) {
+        return this == SEPTIEMBRE || this == OCTUBRE || this == NOVIEMBRE;
+    } else {
+        return this == MARZO || this == ABRIL || this == MAYO;
+    }
+}
+
+public boolean esDeInvierno(boolean esHemisferioNorte) {
+    if (esHemisferioNorte) {
+        return this == DICIEMBRE || this == ENERO || this == FEBRERO;
+    } else {
+        return this == JUNIO || this == JULIO || this == AGOSTO;
+    }
+}
+```
