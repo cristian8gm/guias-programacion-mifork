@@ -105,28 +105,72 @@ Otra ventaja significativa es la seguridad de que los errores no se silencian ac
 
 ## 6. En orientación a objetos, ¿las excepciones suelen ser objetos? ¿Qué ventajas tiene esto en términos de encapsulación? ¿Podemos entonces crear excepciones personalizadas?
 
-### Respuesta
+### Respuesta:
 
+Sí, en lenguajes orientados a objetos como Java las excepciones se representan mediante objetos. Esto permite que las excepciones encapsulen información útil respecto a la causa, el mensaje explicativo y, si se desea, datos adicionales relacionados con el error. Esta estructura facilita la comunicación clara de problemas entre módulos y mejora la mantenibilidad del código.
+
+El hecho de ser objetos permite extender clases base y crear excepciones personalizadas que modelen situaciones específicas del dominio del programa. Un programador puede definir su propia clase de excepción con campos adicionales o comportamientos particulares, reforzando así la expresividad del sistema y manteniendo la coherencia con el diseño orientado a objetos.
+
+---
 
 ## 7. En relación con las ventajas de la encapsulación, comparando el ejemplo en C con Java. ¿Qué **información esencial** lleva cualquier **objeto excepción** que es muy útil tener cuando se llega a un manejador?
 
-### Respuesta
+### Respuesta:
 
+Los objetos excepción incluyen típicamente un mensaje descrito por una cadena que explica la causa del error, lo cual es más expresivo que devolver un simple código numérico como en C. Además, suelen contener la traza de pila (stack trace), que indica la secuencia exacta de llamadas que condujeron al problema, ayudando en gran medida al diagnóstico.
+
+También pueden incluir información contextual adicional, como la causa raíz (otra excepción) o datos específicos del dominio, si se trata de una excepción personalizada. Esto permite tomar decisiones más informadas al manejar el error, mejorando significativamente la depuración y el mantenimiento del programa en comparación con la versión en C.
+
+---
 
 ## 8. En Java, sobre el bloque **"try-catch"**, ¿se pueden tener más de un bloque `catch`? ¿cuántos bloques `catch` se ejecutan?
 
-### Respuesta
+### Respuesta:
 
+Es posible tener múltiples bloques `catch` asociados a un mismo `try`, cada uno diseñado para interceptar excepciones de tipos distintos. Esto permite diferenciar entre diversas clases de error y reaccionar apropiadamente a cada una sin mezclar la lógica. El orden de los `catch` es importante, ya que se evalúan secuencialmente según aparecen.
+
+A pesar de poder tener varios `catch`, solo uno se ejecuta por cada excepción lanzada. Una vez que un `catch` coincide con el tipo de la excepción (o con un supertipo adecuado), se ejecuta su contenido y se ignoran los demás. Esto asegura un control claro y evita ambigüedades en la gestión del error.
+
+---
 
 ## 9. Si las excepciones producen rupturas en el código llamador, ¿cómo podemos garantizar que se ejecuta siempre finalmente un código necesario para cierre de ficheros, liberacion de recursos, antes de que continúe propagándose la excepción? Pon un ejemplo en Java con `finally`, tanto con `catch` como sin él.
 
-### Respuesta
+### Respuesta:
 
+El bloque `finally` se emplea para garantizar que cierto código se ejecute independientemente de si ocurre o no una excepción. Esto resulta esencial para liberar recursos como ficheros, conexiones o memoria, ya que la interrupción provocada por una excepción podría impedir su cierre si no se planifica adecuadamente. El `finally` asegura la limpieza incluso cuando una excepción se propaga.
+
+Un `finally` puede acompañar a un `try-catch`, ejecutándose después del `catch`, o puede combinarse con un `try` sin `catch`, en cuyo caso se ejecutará antes de que la excepción continúe propagándose. Este comportamiento lo hace especialmente útil en patrones de gestión de recursos.
+
+Con `catch`:
+```Java
+try {
+    abrirFichero();
+} catch (IOException e) {
+    System.out.println("Error al abrir fichero.");
+} finally {
+    cerrarFichero();
+}
+
+-- Sin `catch`:
+try {
+    abrirFichero();
+    leerFichero();
+} finally {
+    cerrarFichero();
+}
+```
+
+---
 
 ## 10. En Java, el bloque `finally` puede ir sin `catch`? ¿Se ejecuta siempre tanto si ocurre como si no ocurre una excepción? ¿Y si hay un `return` en medio del `try`?
 
-### Respuesta
+### Respuesta:
 
+El bloque `finally` puede aparecer sin necesidad de un bloque `catch`, formando la estructura `try-finally`. En estos casos, si dentro del `try` ocurre una excepción, el `finally` se ejecuta antes de que la excepción continúe su propagación hacia fuera. Esto lo hace útil cuando se desea limpieza de recursos sin capturar el error.
+
+El `finally` se ejecuta incluso si no ocurre ninguna excepción, o si hay un `return` dentro del `try`. La especificación de Java garantiza que el `finally` tenga prioridad, ejecutándose justo antes de que la función retorne o la excepción se propague. Solo situaciones extremas, como finalizar la JVM, impedirían su ejecución.
+
+---
 
 ## 11. En Java, qué son las excepciones **"controladas"** y las **"no controladas"**? ¿Qué papel juega `RuntimeException`? Pon un ejemplo de excepciones típicas controladas y no controladas que incluso nosotros mismos podríamos usar. Haz dos listas con 3 o 4 ejemplos de situación donde se suele preferir una excepción controlada y donde se suele preferir una excepción no controlada.
 
