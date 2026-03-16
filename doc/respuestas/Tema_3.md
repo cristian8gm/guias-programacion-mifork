@@ -150,8 +150,10 @@ try {
 } finally {
     cerrarFichero();
 }
+```
 
--- Sin `catch`:
+Sin `catch`:
+```Java
 try {
     abrirFichero();
     leerFichero();
@@ -262,8 +264,10 @@ Lanzar otra excepción:
 catch (IOException e) {
     throw new MiExcepcionDeAltoNivel("Fallo en lectura", e);
 }
+```
 
--- Relanzar la misma excepción:
+Relanzar la misma excepción:
+```Java
 catch (IOException e) {
     log(e);
     throw e;
