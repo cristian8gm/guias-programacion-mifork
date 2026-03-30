@@ -87,6 +87,7 @@ final class Linea {
         return a.distancia(b);
     }
 }
+```
 
 ---
 
