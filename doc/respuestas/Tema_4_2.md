@@ -170,34 +170,140 @@ class Zapador extends Soldado {
 
 ## 7. En los lenguajes orientados a objetos ¿hay una **clase base** para todos los objetos? ¿Ocurre en todos los lenguajes? ¿Qué ocurre en Java?
 
-### Respuesta
+### Respuesta:
 
+En muchos lenguajes orientados a objetos existe una clase base común de la que derivan todos los objetos. Esto permite definir comportamientos generales y garantizar un mínimo común para todos los tipos del sistema.
+
+En Java, todas las clases heredan directa o indirectamente de la clase `Object`. Esto significa que todos los objetos tienen métodos como `toString`, `equals` o `hashCode`. No todos los lenguajes siguen este enfoque de forma tan estricta, aunque es bastante habitual.
+
+---
 
 ## 8. ¿Qué es la **"herencia múltiple"**? ¿Existe en Java herencia múltiple?
 
-### Respuesta
+### Respuesta:
 
+La herencia múltiple consiste en permitir que una clase herede de más de una superclase. Esto puede resultar potente, pero también introduce ambigüedades, especialmente cuando varias superclases definen métodos con la misma firma.
+
+Java no permite herencia múltiple de clases. Sin embargo, sí permite implementar múltiples interfaces, lo que ofrece una alternativa segura para compartir contratos de comportamiento sin heredar estado, evitando así muchos de los problemas clásicos de la herencia múltiple.
+
+---
 
 ## 9. Las excepciones en los lenguajes orientados a objetos son objetos. Por tanto, se pueden crear excepciones personalizadas. Pon un ejemplo en Java de una excepción personalizada (`UsuarioNoEncontradoException`), que sea *no controlada* y que además este compuesto con un `Usuario`, para saber qué `Usuario` dio el problema. Permite además que se pueda incluir la causa, es decir, sobrecarga el constructor para tener una versión que permita añadir la causa subyacente. 
 
-### Respuesta
+### Respuesta:
 
+Las excepciones en Java son clases que heredan de `Throwable`. Al crear una excepción personalizada no controlada, se suele heredar de `RuntimeException`. Gracias a la herencia, la nueva excepción se integra plenamente en el sistema de manejo de errores del lenguaje.
+
+Además, al componer la excepción con un objeto de dominio, como `Usuario`, se aporta información contextual valiosa. Al permitir incluir una causa, se conserva la traza del error original, mejorando la depuración.
+
+Código:
+```Java
+class Usuario {
+    private String id;
+
+    public Usuario(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
+}
+
+class UsuarioNoEncontradoException extends RuntimeException {
+    private Usuario usuario;
+
+    public UsuarioNoEncontradoException(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public UsuarioNoEncontradoException(Usuario usuario, Throwable causa) {
+        super(causa);
+        this.usuario = usuario;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+}
+```
+
+---
 
 ## 10. Herencia vs. Composición. Se dice que no se debe emplear herencia simplemente por reutilizar código, es decir, que si quiero reutilizar código simplemente, no debo pensar en herencia como primera opción ¿por qué?
 
-### Respuesta
+### Respuesta:
 
+No se recomienda usar herencia únicamente para reutilizar código porque la herencia implica una relación conceptual fuerte de tipo “es-un”. Si esta relación no es correcta desde el punto de vista del dominio, el diseño se vuelve frágil y difícil de mantener.
+
+Además, la herencia introduce acoplamiento fuerte entre superclase y subclase. Cambios en la superclase pueden afectar inesperadamente a las subclases, lo que reduce la flexibilidad del sistema y aumenta el riesgo de errores.
+
+---
 
 ## 11. Herencia vs. Composición. Se dice que se debe *"favorecer la composición frente a la herencia"*, ¿por qué?
 
-### Respuesta
+### Respuesta:
 
+Se recomienda favorecer la composición porque permite reutilizar comportamiento sin establecer relaciones rígidas de herencia. Con la composición, los objetos colaboran entre sí, manteniendo responsabilidades bien separadas y reduciendo el acoplamiento.
+
+La composición facilita la sustitución de componentes, el cambio de comportamiento en tiempo de ejecución y una evolución más segura del diseño. Por ello, suele considerarse una alternativa más flexible y robusta que la herencia.
+
+---
 
 ## 12. Herencia vs. Composición. Se dice que la *"herencia rompe la encapsulación"*, ¿a qué se refiere esto?
 
-### Respuesta
+### Respuesta:
 
+Se dice que la herencia rompe la encapsulación porque las subclases dependen de detalles internos de la superclase. Incluso con modificadores como `protected`, las subclases pueden verse afectadas por cambios internos que no deberían ser visibles desde fuera.
+
+Esto provoca que la superclase ya no pueda modificarse libremente sin riesgo de romper a sus subclases. En ese sentido, la herencia expone más de lo deseable, mientras que la composición mantiene mejor aislados los componentes.
+
+---
 
 ## 13. Pongamos un ejemplo de dos alternativas para lo mismo. Tenemos un `Estudiante` y un `Trabajador`, ambos tienen datos en común: el DNI y el nombre. Modelemos esto de dos formas: uno por herencia, con una superclase `Persona`, y otro con composición, con una clase `DatosPersonales`. Se debe recibir una instancia de `DatosPersonales` en el constructor de la clase `Estudiante` y `Trabajador`.
 
-### Respuesta
+### Respuesta:
+
+En el enfoque con herencia, se define una superclase `Persona` que contiene los datos comunes, y las clases `Estudiante` y `Trabajador` heredan de ella. Esto establece una relación “es-un” clara, pero introduce un acoplamiento fuerte entre las clases.
+
+En el enfoque con composición, se encapsulan los datos comunes en una clase `DatosPersonales`. Tanto `Estudiante` como `Trabajador` reciben una instancia de esta clase en su constructor. Este diseño es más flexible y evita jerarquías innecesarias.
+
+Código (herencia):
+```Java
+class Persona {
+    protected String dni;
+    protected String nombre;
+}
+
+class Estudiante extends Persona { }
+class Trabajador extends Persona { }
+```
+
+Código (composición):
+```Java
+class DatosPersonales {
+    private String dni;
+    private String nombre;
+
+    public DatosPersonales(String dni, String nombre) {
+        this.dni = dni;
+        this.nombre = nombre;
+    }
+}
+
+class Estudiante {
+    private DatosPersonales datos;
+
+    public Estudiante(DatosPersonales datos) {
+        this.datos = datos;
+    }
+}
+
+class Trabajador {
+    private DatosPersonales datos;
+
+    public Trabajador(DatosPersonales datos) {
+        this.datos = datos;
+    }
+}
+```
