@@ -111,7 +111,6 @@ La composición débil (o agregación) representa una relación más flexible do
 
 ---
 
-
 ## 5. Cuando una clase usa a otra al recibirla o devolverla como parámetro en algún método, al hacer `new` dentro de un método, o al usarlas como variables locales, ¿hablamos de composición o de **"dependencia"**?
 
 ### Respuesta:
@@ -122,31 +121,199 @@ En este tipo de relación, los objetos no forman parte del estado del objeto act
 
 ---
 
-
 ## 6. En el ejemplo anterior de línea y punto, programa la relación entre `Linea` y `Punto` de dos formas. Una **como composición fuerte**, donde el ciclo de vida de los puntos está ligado al de Linea y otra **como composición débil**, donde no.
 
-### Respuesta
+### Respuesta:
 
+En composición fuerte, la `Linea` crea internamente sus puntos. Esto vincula completamente el ciclo de vida de los puntos al de la línea. Si la línea desaparece, no queda ninguna forma de acceder a los puntos, pues no existen fuera del objeto que los contiene.
+
+En composición débil, la `Linea` recibe puntos externos y solo mantiene referencias. Los puntos pueden existir antes y después de la línea, y pueden ser compartidos. Esto aporta flexibilidad y evita la duplicación de entidades en un sistema más amplio.
+
+Composición fuerte:
+```Java
+class LineaFuerte {
+    private final Punto a = new Punto(0, 0);
+    private final Punto b = new Punto(1, 1);
+}
+```
+
+Composición débil:
+```Java
+class LineaDebil {
+    private final Punto a;
+    private final Punto b;
+
+    public LineaDebil(Punto a, Punto b) {
+        this.a = a;
+        this.b = b;
+    }
+}
+```
+
+---
 
 ## 7. En Java, en la composición fuerte, ¿cuando el contenedor destruye los objetos? No se observa que `Linea` destruya los `Punto` explícitamente, ¿Por qué?
 
-### Respuesta
+### Respuesta:
 
+En Java, la destrucción explícita no existe; el programador no borra objetos manualmente. La eliminación de un objeto ocurre automáticamente mediante el recolector de basura (garbage collector), cuando ya no hay referencias accesibles a dicho objeto. Este proceso es transparente y no predecible en cuanto al momento exacto de ejecución.
+
+Por esta razón, aunque `Linea` contenga puntos en composición fuerte, no los “destruye” directamente. Basta con que el objeto `Linea` deje de ser accesible. En ese momento, los puntos también quedan inalcanzables y serán recogidos por el recolector de basura de manera natural.
+
+---
 
 ## 8. Pon un ejemplo de composicion débil entre un departamento que tiene varios profesores. Implementa dos composiciones a la vez: entre el departamento y todos sus profesores y entre el departamento y su director, que es un profesor del departamento. Siempre debe haber un director en el departamento desde el inicio. Lanza excepciones si se viola la invariante. Emplea arrays primitivos de Java, estilo `Profesor[]`, con máximo 50, pero no rompas la encapsulación, no desveles que estás empleando un array, permite añadir un `Profesor` al final de la lista, y eliminar un profesor dada su posición. Da acceso a los profesores con un método para saber cuántos hay y otro para obtener un profesor por posición. El director se puede cambiar por otro profesor del departamento. Sin embargo, ten en cuenta esta invariante de clase: el director debe formar siempre parte de la lista de profesores, es decir, ten cuidado al cambiar el director o al eliminar un profesor.
 
-### Respuesta
+### Respuesta:
 
+Aquí se implementa un departamento que tiene hasta 50 profesores. La composición es débil porque los profesores pueden existir fuera del departamento. Se incluye además un director, que debe ser uno de los profesores del departamento, constituyendo una invariante que se preserva mediante métodos que lanzan excepciones si se viola.
+
+Para evitar exponer la representación interna basada en un array, se ofrecen métodos de acceso controlados: un getter del número de profesores y otro para obtener uno por posición. También se incluyen métodos para añadir y eliminar profesores y para cambiar el director validando que siempre pertenezca al departamento.
+
+Código:
+```Java	
+class Profesor {
+    private final String nombre;
+
+    public Profesor(String nombre) {
+        this.nombre = nombre;
+    }
+}
+
+class Departamento {
+    private final Profesor[] profesores = new Profesor[50];
+    private int numProf = 0;
+    private Profesor director;
+
+    public Departamento(Profesor directorInicial) {
+        profesores[0] = directorInicial;
+        numProf = 1;
+        director = directorInicial;
+    }
+
+    public void addProfesor(Profesor p) {
+        if (numProf >= 50) throw new IllegalStateException("Máximo alcanzado");
+        profesores[numProf++] = p;
+    }
+
+    public void removeProfesor(int pos) {
+        if (pos < 0 || pos >= numProf) throw new IllegalArgumentException();
+        if (profesores[pos] == director)
+            throw new IllegalStateException("No se puede eliminar al director");
+        for (int i = pos; i < numProf - 1; i++) {
+            profesores[i] = profesores[i + 1];
+        }
+        profesores[--numProf] = null;
+    }
+
+    public int getNumProfesores() {
+        return numProf;
+    }
+
+    public Profesor getProfesor(int pos) {
+        if (pos < 0 || pos >= numProf) throw new IllegalArgumentException();
+        return profesores[pos];
+    }
+
+    public void cambiarDirector(Profesor nuevo) {
+        boolean encontrado = false;
+        for (int i = 0; i < numProf; i++) {
+            if (profesores[i] == nuevo) {
+                encontrado = true;
+                break;
+            }
+        }
+        if (!encontrado)
+            throw new IllegalArgumentException("El director debe estar en el departamento");
+        director = nuevo;
+    }
+}
+```
+
+---
 
 ## 9. En Java, existen también `List`, cambia y muestra cómo sería el código anterior empleando `List` en vez de arrays primitivos. ¿Qué parte del código original te has ahorrado? Además, fíjate en el método `getProfesor(int pos)`: si en su lugar existiera un método que devolviera todos los profesores a la vez, ¿qué problema tendría devolver directamente la lista interna? ¿Cómo lo resolverías?
 
-### Respuesta
+### Respuesta:
 
+Al emplear `List`, desaparece la necesidad de manejar manualmente índices, huecos y desplazamientos dentro del array. Métodos como `add`, `remove` y `size` simplifican notablemente la gestión de la colección, reduciendo la posibilidad de errores y mejorando la claridad del código.
+
+Sin embargo, devolver directamente la lista interna expondría la representación y permitiría que código externo modifique la colección sin control. Para evitarlo, se puede devolver una copia inmutable o una vista no modificable, lo que mantiene la encapsulación y garantiza la integridad del objeto.
+
+Código simplificado:
+```Java
+import java.util.*;
+
+class Departamento {
+    private final List<Profesor> profesores = new ArrayList<>();
+    private Profesor director;
+
+    public Departamento(Profesor directorInicial) {
+        profesores.add(directorInicial);
+        director = directorInicial;
+    }
+
+    public void addProfesor(Profesor p) {
+        profesores.add(p);
+    }
+
+    public void removeProfesor(int pos) {
+        Profesor p = profesores.get(pos);
+        if (p == director)
+            throw new IllegalStateException("No se puede eliminar al director");
+        profesores.remove(pos);
+    }
+    public int getNumProfesores() {
+        return profesores.size();
+    }
+
+    public Profesor getProfesor(int pos) {
+        return profesores.get(pos);
+    }
+
+    public List<Profesor> getProfesoresCopia() {
+        return Collections.unmodifiableList(new ArrayList<>(profesores));
+    }
+}
+```
+
+---
 
 ## 10. Al igual que ocurre con las excepciones en Java, que pueden encerrar causas (que son excepciones), de forma recursiva, suponen un tipo especial de composiciones, denominadas composiciones recursivas. Pon un ejemplo en Java de una `Persona`, que sea inmutable, y que tiene una madre, que es otra `Persona`. Haz un main con un ejemplo de uso con una familia de personas, desde el nieto hasta la abuela. Enumera algún otro ejemplo clásico de composiciones recursivas.
 
-### Respuesta
+### Respuesta:
+
+La composición recursiva ocurre cuando una clase contiene una instancia de sí misma. Esto permite representar estructuras como árboles genealógicos, árboles sintácticos, nodos de directorio, etc. Si además se exige inmutabilidad, se garantiza que los datos genealógicos no cambian una vez creados.
+
+Aquí se implementa una clase `Persona` inmutable con un atributo `madre`, que es otra `Persona`. Se muestra también un ejemplo de uso encadenando varias generaciones. Las composiciones recursivas aparecen frecuentemente en estructuras jerárquicas como carpetas, expresiones matemáticas o listas enlazadas.
+
+Código:
+```Java
+final class Persona {
+    private final String nombre;
+    private final Persona madre;
+
+    public Persona(String nombre, Persona madre) {
+        this.nombre = nombre;
+        this.madre = madre;
+    }
+}
+
+class Main {
+    public static void main(String[] args) {
+        Persona abuela = new Persona("Ana", null);
+        Persona madre = new Persona("Beatriz", abuela);
+        Persona nieto = new Persona("Carlos", madre);
+    }
+}
+```
+
+---
 
 ## 11. ¿Qué son las relaciones de composición "bidireccionales"? ¿Qué habría que hacer para implementar este tipo de relación en el ejemplo de `Profesor` y `Departamento`?
 
-### Respuesta
+### Respuesta:
+
+Una composición bidireccional es aquella en la que dos clases mantienen referencias mutuamente. Esto implica que cada objeto conoce al otro, y ambos representan la relación desde su propio punto de vista. Este tipo de diseño requiere especial cuidado para garantizar consistencia, evitando duplicación o desincronización.
+
+En el caso de `Profesor` y `Departamento`, implicaría que el departamento mantiene una lista de profesores, y cada profesor mantiene una referencia a su departamento. Esta relación debe actualizarse en ambos sentidos cada vez que se añada o elimine un profesor, lo que exige métodos bien diseñados para preservar las invariantes y evitar estados inconsistentes.
