@@ -17,48 +17,174 @@ Por favor, escribe en impersonal las respuestas.
 
 ## 1. ¿Qué es un puntero a una función? Pon un ejemplo de código en C, donde se define una función y que reciba una cadena de caracteres como parámetro y devuelva la cadena en mayúsculas. Crea un puntero en una variable local a dicha función llamado `aMayusculas` e invócala con el puntero.
 
-### Respuesta
+### Respuesta:
 
+Un puntero a función en C es una variable que almacena la dirección de memoria de una función. Esto permite tratar a las funciones como datos: se pueden asignar a variables, pasar como parámetros o devolver como resultado. Es una técnica fundamental en C para implementar comportamientos flexibles, como callbacks o estrategias intercambiables.
+
+El uso de punteros a función no implica cierre de contexto ni captura de variables externas. La función apuntada solo puede operar con los parámetros que se le pasan explícitamente, lo que limita su expresividad frente a mecanismos funcionales más modernos.
+
+Código C:
+```C
+#include <ctype.h>
+#include <stdio.h>
+
+void aMayusculas(char* s) {
+    for (int i = 0; s[i] != '\0'; i++) {
+        s[i] = toupper(s[i]);
+    }
+}
+
+int main() {
+    void (*aMayusculasPtr)(char*) = aMayusculas;
+
+    char texto[] = "hola mundo";
+    aMayusculasPtr(texto);
+    printf("%s\n", texto);
+}
+```
+
+---
 
 ## 2. ¿Qué es una **función lambda** en un lenguaje de programación? Pon un ejemplo similar al anterior en Javascript y otro en Java con funciones lambda. Usa una variable local `aMayusculas` para apuntar a la función lambda. Por simplicidad, en Java, emplea `Function<String, String>` para el tipo de la referencia a la función lambda.
 
-### Respuesta
+### Respuesta:
 
+Una función lambda es una función anónima que puede definirse de forma concisa y asignarse a una variable o pasarse como argumento. Suelen emplearse para expresar comportamientos simples sin necesidad de definir funciones con nombre. Son especialmente útiles cuando se usan como parámetros de otras funciones.
+
+A diferencia de los punteros a función en C, las funciones lambda pueden capturar variables del entorno donde se definen, formando cierres (*closures*). Esto aumenta notablemente su expresividad y potencia.
+
+JavaScript:
+```Java
+let aMayusculas = s => s.toUpperCase();
+console.log(aMayusculas("hola"));
+```
+
+Java:
+```Java
+import java.util.function.Function;
+
+Function<String, String> aMayusculas = s -> s.toUpperCase();
+System.out.println(aMayusculas.apply("hola"));
+```
+
+---
 
 ## 3. ¿Qué es el **paradigma funcional**? ¿Por qué a algunos lenguajes orientados a objetos como Java 8, se les llama multi-paradigma? ¿Qué quiere decir que las funciones son "ciudadanos de primera clase"?
 
-### Respuesta
+### Respuesta:
 
+El paradigma funcional es un estilo de programación que trata las funciones como elementos centrales del diseño. Se enfatiza el uso de funciones puras, la ausencia de efectos secundarios y el uso de funciones como valores que pueden pasarse y devolverse.
+
+Lenguajes como Java se consideran multi-paradigma porque, aunque nacieron como orientados a objetos, incorporan desde Java 8 características funcionales. Decir que las funciones son “ciudadanos de primera clase” implica que pueden almacenarse en variables, pasarse como argumentos y devolverse como resultados, al igual que cualquier otro dato.
+
+---
 
 ## 4. Explica la sintaxis básica de una función lambda en Java.
 
-### Respuesta
+### Respuesta:
 
+La sintaxis básica de una función lambda en Java consta de tres partes: parámetros, operador `->` y cuerpo. Los parámetros pueden ir entre paréntesis, el cuerpo puede ser una expresión o un bloque de código. El tipo de la lambda no se indica explícitamente, sino que se infiere del contexto.
+
+Esta inferencia se basa en la interfaz funcional a la que se asigna la lambda. Por ello, una lambda en Java siempre tiene un tipo bien definido, aunque no se escriba de forma explícita.
+
+Ejemplo:
+(x, y) -> x + y
+
+---
 
 ## 5. Ahora recibamos una función como parámetro a un método y la llamaremos desde dentro. Amplia los ejemplos anteriores de Java y JavaScript con un método llamado `transformar`, que reciba un `String` como parámetro y luego una función transformadora como lo es `aMayúsculas` y la invoque desde dentro.
 
-### Respuesta
+### Respuesta:
 
+Una de las características clave del enfoque funcional es la posibilidad de pasar funciones como argumentos. Esto permite parametrizar el comportamiento de un método sin necesidad de herencia ni condicionales complejos.
+
+En el ejemplo, el método `transformar` recibe una cadena y una función que define cómo transformar esa cadena. El método no conoce el detalle de la transformación, solo se limita a invocar la función recibida.
+
+Java:
+```Java
+static String transformar(String s, Function<String, String> f) {
+    return f.apply(s);
+}
+```
+
+JavaScript:
+```Java
+function transformar(s, f) {
+    return f(s);
+}
+```
+
+---
 
 ## 6. Ahora, invoca `transformar`, con una nueva función lambda directamente en la llamada a `transformar`, por ejemplo, una función lambda que invierta la cadena. Define la función de inversión justo cuando la estás pasando como parámetro.
 
-### Respuesta
+### Respuesta:
 
+Las funciones lambda pueden definirse directamente en el punto donde se usan, sin necesidad de asignarlas previamente a una variable. Esto es habitual cuando la función solo se emplea una vez y su comportamiento es sencillo.
+
+Este estilo favorece un código más expresivo y compacto, donde el comportamiento se describe justo en el lugar donde se necesita.
+
+Java:
+```Java
+String r = transformar("hola", s -> new StringBuilder(s).reverse().toString());
+```
+
+JavaScript:
+```Java
+let r = transformar("hola", s => s.split("").reverse().join(""));
+```
+
+---
 
 ## 7. ¿Qué se entiende por cierre o "closure" en el contexto de las funciones lambda? Pon un ejemplo en Java de cómo una función lambda es capaz de acceder a una variable local en el contexto donde fue definida. Modifica el ejemplo anterior, creando otra función lambda para transformar una cadena, pero que lo que haga es concatenar a la cadena de entrada otra cadena que está en una variable local definida fuera de la función lambda.
 
-### Respuesta
+### Respuesta:
 
+Un cierre ocurre cuando una función lambda captura variables del entorno donde fue definida. Estas variables no forman parte de los parámetros de la función, pero siguen siendo accesibles mientras la función exista.
+
+En Java, las variables capturadas deben ser efectivamente finales. Esto garantiza coherencia y evita efectos secundarios difíciles de razonar. El siguiente ejemplo muestra cómo una lambda usa una variable externa.
+
+Java:
+```Java
+String sufijo = "!!!";
+Function<String, String> transformar = s -> s + sufijo;
+System.out.println(transformar.apply("hola"));
+```
+
+---
 
 ## 8. Reflexiona: ¿en qué se diferencia entonces una función lambda de los punteros a funciones que hay en C?
 
-### Respuesta
+### Respuesta:
 
+Un puntero a función en C solo referencia una función concreta y no captura contexto alguno. Toda la información necesaria debe pasarse explícitamente mediante parámetros. Esto limita su capacidad para expresar comportamientos dependientes del entorno.
+
+Las funciones lambda, en cambio, pueden capturar variables y formar cierres, lo que permite construir funciones “configuradas” dinámicamente. Esta diferencia es clave para entender la mayor expresividad del enfoque funcional moderno.
+
+---
 
 ## 9. Devolvamos ahora funciones. Creemos ahora una función que sea capaz de crear funciones "descuento". Una función "descuento", decrementa un porcentaje pasado como parámetro. Por simplicidad, usa `Function<Double, Double>` para su tipo. La función `crearDescuento(porcentaje)`, recibe solo el porcentaje de descuento a aplicar y devuelve la función de descuento. Prueba a crear dos descuentos distintos y aplicarlos a una cantidad. Explica la closure en la función descuento.
 
-### Respuesta
+### Respuesta:
 
+Una función puede devolver otra función, creando comportamientos especializados a partir de parámetros iniciales. En este caso, se crea una función que aplica un descuento concreto, capturando el porcentaje en un cierre.
+
+El porcentaje queda almacenado en el entorno de la lambda devuelta. Cada función descuento mantiene su propio valor capturado, demostrando claramente el concepto de closure.
+
+Java:
+```Java
+static Function<Double, Double> crearDescuento(double porcentaje) {
+    return precio -> precio * (1 - porcentaje);
+}
+
+Function<Double, Double> d10 = crearDescuento(0.10);
+Function<Double, Double> d20 = crearDescuento(0.20);
+
+System.out.println(d10.apply(100.0));
+System.out.println(d20.apply(100.0));
+```
+
+---
 
 ## 10. En Java, que es un lenguaje con comprobación estática de tipos, donde los tipos se declaran, toda función lambda tiene un tipo, que se conoce como **interfaz funcional**. ¿Qué es una **interfaz funcional**? ¿Qué requisitos tiene?
 
