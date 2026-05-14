@@ -188,42 +188,166 @@ System.out.println(d20.apply(100.0));
 
 ## 10. En Java, que es un lenguaje con comprobación estática de tipos, donde los tipos se declaran, toda función lambda tiene un tipo, que se conoce como **interfaz funcional**. ¿Qué es una **interfaz funcional**? ¿Qué requisitos tiene?
 
-### Respuesta
+### Respuesta:
 
+En Java, una interfaz funcional es una interfaz que define exactamente un método abstracto. Es el tipo al que se asocian las funciones lambda, permitiendo que el compilador verifique la compatibilidad de tipos.
+
+Puede contener métodos por defecto o estáticos, pero solo un método abstracto. Este requisito permite que el compilador infiera de forma inequívoca qué método implementa la lambda.
+
+---
 
 ## 11. Creemos una interfaz funcional a mano. Por ejemplo, define la interfaz funcional del ejemplo que transforma la cadena en otra. Llámale `Transformador`, que define una función que convierte una cadena de texto (`String`) en otra (`String`).
 
-### Respuesta
+### Respuesta:
 
+Se puede definir una interfaz funcional personalizada cuando se desea expresar con claridad la intención del código. En este caso, `Transformador` modela una transformación de una cadena en otra.
+
+Definir interfaces funcionales propias mejora la legibilidad frente al uso directo de interfaces genéricas cuando el dominio lo justifica.
+
+Código:
+```Java
+@FunctionalInterface
+interface Transformador {
+    String transformar(String s);
+}
+```
+
+---
 
 ## 12. Ahora hagamos la interfaz funcional algo más genérica y empleando generics, para que permita definir un `Transformador` de un tipo en otro. Pon un ejemplo de un transformador que redondea un `Double` en un `Integer`.
 
-### Respuesta
+### Respuesta:
 
+Al añadir generics, la interfaz funcional se vuelve reutilizable para múltiples tipos. Esto permite definir transformaciones entre distintos tipos sin perder seguridad en el chequeo.
+
+El ejemplo muestra un transformador que convierte un `Double` en un `Integer`, aprovechando la genericidad.
+
+Código:
+```Java
+@FunctionalInterface
+interface Transformador<T, R> {
+    R transformar(T valor);
+}
+
+Transformador<Double, Integer> redondear = d -> (int) Math.round(d);
+```
+
+---
 
 ## 13. `Transformador`, en su versión genérica, parece muy útil y reutilizable, hasta el punto de que es igual a una interfaz funcional que ya hay, que es `Function<T, R>`. Muestra las interfaces funcionales predefinidas que hay en Java.
 
-### Respuesta
+### Respuesta:
 
+Java proporciona un conjunto amplio de interfaces funcionales estándar en el paquete `java.util.function`. Estas cubren los casos más habituales y evitan la necesidad de definir interfaces propias.
+
+Algunas de las más usadas son: `Function<T, R>`, `Consumer<T>`, `Supplier<T>`, `Predicate<T>`, `UnaryOperator<T>` y `BinaryOperator<T>`. Todas siguen el modelo de una única operación abstracta.
+
+---
 
 ## 14. Vamos a ver ejemplos expresivos de funcional en Java. Estudiemos el `List.forEach`, como versión funcional del bucle `for`. Emplea el `forEach` para recorrer una lista de `Integer` y que muestre un mensaje si el entero es positivo.
 
-### Respuesta
+### Respuesta:
+
+El método `forEach` permite recorrer colecciones de forma funcional, pasando una acción a ejecutar sobre cada elemento. Esto elimina la necesidad de bucles explícitos y favorece un estilo declarativo.
+
+El ejemplo muestra cómo imprimir un mensaje solo para los enteros positivos de una lista, usando una lambda.
+
+Código:
+```Java
+List<Integer> nums = List.of(-2, 3, 0, 5);
+nums.forEach(n -> {
+    if (n > 0) System.out.println("Positivo: " + n);
+});
+```
+
+---
+
 
 ## 15. Repasando el tema de genericidad, fíjate en la firma de `forEach`, ¿por qué se usa `Consumer<? super T>` y no `Consumer<T>`? Explica qué significa **PECS**, y explícalo para el caso de mejorar el ejemplo del método `transformar` la hora de definir el tipo de la función transformadora.
 
-### Respuesta
+### Respuesta:
+
+PECS significa *Producer Extends, Consumer Super*. Indica que si una estructura produce valores, se debe usar `extends`, y si consume valores, se debe usar `super`.
+
+`forEach` consume elementos de la colección, por lo que acepta un `Consumer<? super T>`. Esto aumenta la flexibilidad del método. El mismo principio puede aplicarse al método `transformar` para aceptar funciones más generales sin perder seguridad.
+
+---
 
 ## 16. Referencias a métodos. Podemos obtener una referencia a métodos de objetos o clases. Pon un ejemplo en JavaScript y en Java, de una clase `Persona` con un método `saludar`. En el código principal, crea una `Persona` con un nombre, y obtén una referencia a su método `saludar` en una variable local. Invoca `saludar` con esa referencia a su método `saludar`.
 
-### Respuesta
+### Respuesta:
 
+Las referencias a métodos permiten tratar métodos existentes como funciones, sin necesidad de escribir una lambda explícita. Son una forma más concisa cuando la lambda solo delega en un método.
+
+Se pueden usar tanto en JavaScript como en Java, y mantienen el enlace con el objeto cuando se trata de métodos de instancia.
+
+JavaScript:
+```Java
+class Persona {
+    constructor(nombre) { this.nombre = nombre; }
+    saludar() { console.log("Hola, soy " + this.nombre); }
+}
+let p = new Persona("Ana");
+let ref = p.saludar.bind(p);
+ref();
+```
+
+Java:
+```Java
+class Persona {
+    private String nombre;
+    public Persona(String nombre) { this.nombre = nombre; }
+    public void saludar() {
+        System.out.println("Hola, soy " + nombre);
+    }
+}
+
+Persona p = new Persona("Ana");
+Runnable r = p::saludar;
+r.run();
+```
+
+---
 
 ## 17. ¿Qué tipos de referencias a método se pueden hacer en Java? Pon un ejemplo de referencia a método estático, a constructor, a método de instancia de una instancia concreta y a método de instancia sobre cualquier instancia.
 
-### Respuesta
+### Respuesta:
 
+Java permite cuatro tipos principales de referencias a método. Cada una cubre un patrón habitual de uso y sustituye a lambdas simples.
+
+Ejemplos:
+```Java
+Clase::metodoEstatico
+Persona::new
+p::saludar
+Persona::saludar
+```
+
+---
 
 ## 18. Otro ejemplo expresivo. Ordena una lista de `Persona`, cada persona tiene un nombre y una edad (de tipo entero). Ordena la lista de `Persona` con `Collections.sort`, pasándole como comparador una expresión lambda que compare la edad de ambas personas y si tienen la misma edad, se ordene por orden alfabético del nombre. Crea dos versiones: Una con la función de comparación hecha manualmente, y otra empleando `Comparator`.
 
-### Respuesta
+### Respuesta:
+
+Las expresiones lambda permiten definir comparadores de forma clara y concisa. Esto evita clases anónimas verbosas y hace que la lógica de ordenación sea más legible.
+
+Se muestra una versión manual y otra usando utilidades de `Comparator`, que resultan más expresivas y reutilizables.
+
+Código:
+```Java
+class Persona {
+    String nombre;
+    int edad;
+}
+
+Collections.sort(personas, (p1, p2) -> {
+    if (p1.edad != p2.edad)
+        return p1.edad - p2.edad;
+    return p1.nombre.compareTo(p2.nombre);
+});
+
+Collections.sort(personas,
+    Comparator.comparingInt((Persona p) -> p.edad)
+              .thenComparing(p -> p.nombre)
+);
+```
